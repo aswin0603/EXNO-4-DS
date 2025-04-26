@@ -268,3 +268,7 @@ df[categorical_columns]
 
 # RESULT:
 Thus we have read the given data and performed Feature Scaling and Feature Selection process and saved the data to the file.
+
+
+### Name: Aswin B
+### Register Number: 212224110007
