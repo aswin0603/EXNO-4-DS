@@ -69,6 +69,8 @@ df1[['Height','Weight']]=sc.fit_transform(df1[['Height','Weight']])
 df1.head(10)
 ```
 ![image](https://github.com/user-attachments/assets/0daee022-90f1-4f78-824a-b4acc3d1ee00)
+![image](https://github.com/user-attachments/assets/e2acd576-e264-44e4-8218-0ac2d46e8882)
+
 
 ### Min-Max Scaling
 ```python
@@ -78,6 +80,8 @@ df[['Height','Weight']]=scaler.fit_transform(df[['Height','Weight']])
 df.head(10)
 ```
 ![image](https://github.com/user-attachments/assets/5fa8c726-812b-4680-ba3f-dd3492389f59)
+![image](https://github.com/user-attachments/assets/ddc306d7-2019-40ac-b06f-63f55aae654d)
+
 
 ### Maximum Absolute Scaling
 
@@ -94,6 +98,8 @@ df3[['Height','Weight']]=scaler.fit_transform(df3[['Height','Weight']])
 df3
 ```
 ![image](https://github.com/user-attachments/assets/4466284d-f286-42bd-8ed4-e7cceb07b201)
+![image](https://github.com/user-attachments/assets/808edda0-6088-411d-9754-3e2a045b7967)
+
 
 ### Robust Scaling
 ```python
@@ -109,6 +115,8 @@ df4[['Height','Weight']]=scaler.fit_transform(df4[['Height','Weight']])
 df4.head()
 ```
 ![image](https://github.com/user-attachments/assets/48ac1c69-8ec6-4da9-a752-3aa860ba26cb)
+![image](https://github.com/user-attachments/assets/7650d6bc-811f-4085-a2b5-937d9c22546c)
+
 
 ### Feature Selection
 
@@ -231,6 +239,67 @@ df[categorical_columns]
 ```
 ![image](https://github.com/user-attachments/assets/fe2469fb-7bd7-440e-a73e-b9f42b4832aa)
 
+### ANOVA
+```python
+k_anova = 5
+selector_anova = SelectKBest(score_func=f_classif, k=k_anova)
+X_anova = selector_anova.fit_transform(X, y)
+selected_features_anova = X.columns[selector_anova.get_support()]
+print("\nSelected features using ANOVA:")
+print(selected_features_anova)
+```
+![Screenshot from 2025-04-28 10-32-11](https://github.com/user-attachments/assets/d1281f5e-be3e-4ac7-87c8-d54d960ffe68)
+
+
+### Wrapper Method
+
+```python
+import pandas as pd
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LogisticRegression
+categorical_columns = ['JobType', 'EdType', 'maritalstatus', 'occupation', 'relationship', 'race', 'gender', 'nativecountry']
+df[categorical_columns] = df[categorical_columns].astype('category')
+df[categorical_columns]
+```
+![image](https://github.com/user-attachments/assets/b418b641-8fcc-4dc5-bf21-cd292b4808ad)
+
+```python
+df[categorical_columns] = df[categorical_columns].apply(lambda x: x.cat.codes)
+df[categorical_columns]
+```
+![image](https://github.com/user-attachments/assets/4d889a02-eea5-49bc-b62e-47b811f38bb9)
+
+```python
+X = df.drop(columns=['SalStat'])
+y = df['SalStat']
+logreg = LogisticRegression()
+n_features_to_select = 6
+rfe = RFE(estimator=logreg, n_features_to_select=n_features_to_select)
+rfe.fit(X, y)
+```
+![image](https://github.com/user-attachments/assets/06e5f09d-a65c-4177-8842-7d597d3b164b)
+![image](https://github.com/user-attachments/assets/6ec15374-0029-4be7-a441-7f0c8aba8977)
+
+```python
+selected_features = X.columns[rfe.support_]
+print("Selected features using RFE:")
+print(selected_features)
+```
+![image](https://github.com/user-attachments/assets/c7de612a-4d15-4c19-924e-b015db22e69f)
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn.ensemble import RandomForestClassifier
+X_selected = X[selected_features]
+X_train, X_test, y_train, y_test = train_test_split(X_selected, y, test_size=0.3, random_state=42)
+rf = RandomForestClassifier(n_estimators=100, random_state=42)
+rf.fit(X_train, y_train)
+y_pred = rf.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Model accuracy using Fisher Score selected features: {accuracy}")
+```
+![image](https://github.com/user-attachments/assets/21e2c1b4-9e7c-4c0f-b3b6-2e38be10c06b)
 
 
 
